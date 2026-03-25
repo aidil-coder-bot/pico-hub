@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PICO SulTeng — COVID-19 Data Platform for Central Sulawesi</title>
+  <meta name="description" content="PICO SulTeng is an open-source COVID-19 data platform for Central Sulawesi, Indonesia. Built by Fajrian Aidil Pratama during his 3rd year of college." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #0f172a;
+      --accent: #3b82f6;
+      --accent2: #8b5cf6;
+      --text: #0f172a;
+      --muted: #64748b;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: #fff;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 2rem;
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; gap: 1rem;
+      height: 60px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-weight: 700; font-size: 1.1rem; color: var(--primary);
+    }
+    .nav-logo img { width: 32px; height: 32px; object-fit: contain; border-radius: 6px; }
+    .nav-links { margin-left: auto; display: flex; gap: 0.25rem; }
+    .nav-links a {
+      padding: 0.4rem 0.85rem; border-radius: 6px;
+      font-size: 0.9rem; font-weight: 500; color: var(--muted);
+      transition: color 0.15s, background 0.15s;
+    }
+    .nav-links a:hover { color: var(--primary); background: #f1f5f9; }
+
+    /* HERO */
+    .hero {
+      background: var(--primary);
+      color: #fff;
+      padding: 6rem 2rem 5rem;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: #93c5fd;
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em;
+      padding: 0.35rem 1rem; border-radius: 999px;
+      margin-bottom: 1.75rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 800; line-height: 1.2;
+      max-width: 720px; margin: 0 auto 1.25rem;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1.1rem; color: #94a3b8;
+      max-width: 540px; margin: 0 auto 0.9rem;
+    }
+    .hero-author {
+      font-size: 0.85rem; color: #64748b;
+      margin-bottom: 2.25rem;
+    }
+    .hero-ctas { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.65rem 1.4rem; border-radius: 8px;
+      font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #e2e8f0;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.07); }
+
+    /* APPS GRID */
+    .section { padding: 4.5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-title {
+      font-size: 1.6rem; font-weight: 700; margin-bottom: 0.4rem;
+    }
+    .section-sub { color: var(--muted); margin-bottom: 2.5rem; font-size: 0.95rem; }
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 768px) { .apps-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 500px) { .apps-grid { grid-template-columns: 1fr; } }
+
+    .app-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .app-card:hover { box-shadow: 0 8px 32px rgba(15,23,42,0.08); transform: translateY(-2px); }
+    .app-icon { font-size: 1.8rem; margin-bottom: 0.25rem; }
+    .app-name { font-size: 1.05rem; font-weight: 700; }
+    .app-meta { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .pill {
+      font-size: 0.72rem; font-weight: 600; padding: 0.15rem 0.6rem;
+      border-radius: 999px; background: #f1f5f9; color: var(--muted);
+    }
+    .pill-live { background: #dcfce7; color: #166534; }
+    .pill-android { background: #dbeafe; color: #1e40af; }
+    .pill-oss { background: #f3e8ff; color: #6b21a8; }
+    .app-desc { font-size: 0.875rem; color: var(--muted); flex: 1; }
+    .app-link {
+      font-size: 0.85rem; font-weight: 600; color: var(--accent);
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      margin-top: auto;
+    }
+    .app-link:hover { text-decoration: underline; }
+
+    /* STORY */
+    .story-section {
+      background: #fffbf5;
+      border-top: 1px solid #fde68a;
+      border-bottom: 1px solid #fde68a;
+    }
+    .story-content { max-width: 760px; }
+    .story-section .section-title { font-size: 1.6rem; margin-bottom: 1.5rem; }
+    .story-body p {
+      font-size: 1rem; color: #374151; line-height: 1.8;
+      margin-bottom: 1.1rem;
+    }
+    .story-body p:last-child { margin-bottom: 0; }
+    .profile-card {
+      display: flex; align-items: center; gap: 1rem;
+      margin-top: 2rem; padding: 1.25rem 1.5rem;
+      background: #fff; border-radius: 12px;
+      border: 1px solid #fde68a;
+    }
+    .avatar {
+      width: 52px; height: 52px; border-radius: 999px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: #fff; font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .profile-info .name { font-weight: 700; font-size: 0.95rem; }
+    .profile-info .role { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.25rem; }
+    .profile-info a { font-size: 0.82rem; color: var(--accent); font-weight: 500; }
+    .profile-info a:hover { text-decoration: underline; }
+
+    /* BUILT WITH */
+    .tech-pills { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
+    .tech-pill {
+      font-size: 0.875rem; font-weight: 600; padding: 0.4rem 1rem;
+      border-radius: 8px; background: #f8fafc;
+      border: 1px solid #e2e8f0; color: var(--text);
+    }
+
+    /* DATA SOURCES */
+    .sources-grid {
+      display: flex; flex-wrap: wrap; gap: 1.5rem;
+      align-items: center; margin-top: 1.5rem;
+    }
+    .source-logo {
+      height: 48px; max-width: 140px;
+      object-fit: contain; filter: grayscale(0.2);
+      transition: filter 0.2s;
+    }
+    .source-logo:hover { filter: none; }
+
+    /* FOOTER */
+    footer {
+      background: var(--primary); color: #94a3b8;
+      text-align: center; padding: 2rem;
+      font-size: 0.875rem;
+    }
+    footer a { color: #60a5fa; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <img src="/pico-app-logo.webp" alt="PICO Logo" />
+      PICO SulTeng
+    </div>
+    <div class="nav-links">
+      <a href="https://pico-api.banuacoder.com/api/v1" target="_blank" rel="noopener">API</a>
+      <a href="https://pico-api.banuacoder.com" target="_blank" rel="noopener">Docs</a>
+      <a href="https://github.com/banua-coder/pico-hub" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Open Source · Open Data</div>
+  <h1>COVID-19 Data Platform for <span class="gradient">Central Sulawesi</span></h1>
+  <p class="hero-sub">Real-time pandemic data for Central Sulawesi — open API, web dashboard, and mobile app built for the community.</p>
+  <p class="hero-author">Built by Fajrian Aidil Pratama during his 3rd year of college</p>
+  <div class="hero-ctas">
+    <a class="btn btn-primary" href="https://pico-api.banuacoder.com/api/v1" target="_blank" rel="noopener">⚡ Explore the API</a>
+    <a class="btn btn-outline" href="https://github.com/banua-coder/pico-api-go" target="_blank" rel="noopener">🔧 View Source</a>
+  </div>
+</section>
+
+<!-- APPS GRID -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Apps &amp; Services</h2>
+    <p class="section-sub">Everything built under the PICO SulTeng platform</p>
+    <div class="apps-grid">
+
+      <div class="app-card">
+        <div class="app-icon">⚡</div>
+        <div class="app-name">REST API</div>
+        <div class="app-meta">
+          <span class="pill">Go</span>
+          <span class="pill pill-live">Live</span>
+        </div>
+        <p class="app-desc">JSON REST API serving real-time COVID-19 case data, hospital info, and regency-level statistics for Central Sulawesi.</p>
+        <a class="app-link" href="https://pico-api.banuacoder.com/api/v1" target="_blank" rel="noopener">pico-api.banuacoder.com/api/v1 →</a>
+      </div>
+
+      <div class="app-card">
+        <div class="app-icon">📖</div>
+        <div class="app-name">Documentation</div>
+        <div class="app-meta">
+          <span class="pill">Vue.js</span>
+          <span class="pill pill-live">Live</span>
+        </div>
+        <p class="app-desc">Interactive API documentation covering all endpoints, parameters, and response formats with examples.</p>
+        <a class="app-link" href="https://pico-api.banuacoder.com" target="_blank" rel="noopener">pico-api.banuacoder.com →</a>
+      </div>
+
+      <div class="app-card">
+        <div class="app-icon">📊</div>
+        <div class="app-name">Web Dashboard</div>
+        <div class="app-meta">
+          <span class="pill">Laravel</span>
+          <span class="pill pill-live">Live</span>
+        </div>
+        <p class="app-desc">Web-based dashboard for visualizing case trends, hospital capacity, and donation distribution across the province.</p>
+        <a class="app-link" href="https://banuacoders.com/corona" target="_blank" rel="noopener">banuacoders.com/corona →</a>
+      </div>
+
+      <div class="app-card">
+        <div class="app-icon">📱</div>
+        <div class="app-name">Mobile App</div>
+        <div class="app-meta">
+          <span class="pill">Flutter</span>
+          <span class="pill pill-android">Android</span>
+        </div>
+        <p class="app-desc">Native Android app delivering live case counts, nearby hospital locations, and community updates for SulTeng residents.</p>
+        <a class="app-link" href="https://banuacoders.com/app/pico/" target="_blank" rel="noopener">banuacoders.com/app/pico →</a>
+      </div>
+
+      <div class="app-card">
+        <div class="app-icon">🔧</div>
+        <div class="app-name">API Source Code</div>
+        <div class="app-meta">
+          <span class="pill">Open Source</span>
+        </div>
+        <p class="app-desc">The Go rewrite of the original PHP/Lumen API — clean architecture, Docker-ready, and fully open source on GitHub.</p>
+        <a class="app-link" href="https://github.com/banua-coder/pico-api-go" target="_blank" rel="noopener">github.com/banua-coder/pico-api-go →</a>
+      </div>
+
+      <div class="app-card">
+        <div class="app-icon">🦋</div>
+        <div class="app-name">Mobile Source Code</div>
+        <div class="app-meta">
+          <span class="pill">Open Source</span>
+        </div>
+        <p class="app-desc">Full Flutter source for the PICO SulTeng Android app — open source and available for the community to learn and contribute.</p>
+        <a class="app-link" href="https://github.com/ryanaidilp/PICO_SULTENG_FLUTTER" target="_blank" rel="noopener">github.com/ryanaidilp/PICO_SULTENG_FLUTTER →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- THE STORY -->
+<section class="section story-section">
+  <div class="container story-content">
+    <h2 class="section-title">The Story</h2>
+    <div class="story-body">
+      <p>When COVID-19 hit Indonesia in 2020, universities sent students home. Back in Central Sulawesi, I noticed our local government's pandemic data was scattered and hard to access — unlike Pikobar Jawa Barat which had a proper data platform.</p>
+      <p>So I built one. What started as a personal project during my 3rd year of college grew into a full platform — API, web dashboard, and mobile app. At its peak, PICO SulTeng reached 5,000 daily active users and became a tool that helped distribute donations and connect communities.</p>
+      <p>Through PICO, we partnered with Sulteng Lawan COVID and Jaga Palu — local communities fighting the pandemic together. The platform helped people find hospitals, track cases in their regency, and stay informed when reliable information was scarce.</p>
+      <p>The API has since been rewritten from PHP/Lumen to Go, and all code remains open source — a record of what one student could build when the community needed it most.</p>
+    </div>
+    <div class="profile-card">
+      <div class="avatar">FA</div>
+      <div class="profile-info">
+        <div class="name">Fajrian Aidil Pratama</div>
+        <div class="role">Creator &amp; Maintainer · Built during 3rd year at university</div>
+        <a href="https://github.com/ryanaidilp" target="_blank" rel="noopener">github.com/ryanaidilp →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUILT WITH -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Built With</h2>
+    <p class="section-sub">The tech stack powering PICO SulTeng</p>
+    <div class="tech-pills">
+      <span class="tech-pill">Go</span>
+      <span class="tech-pill">Flutter</span>
+      <span class="tech-pill">Vue.js</span>
+      <span class="tech-pill">Laravel</span>
+      <span class="tech-pill">Docker</span>
+      <span class="tech-pill">MySQL</span>
+      <span class="tech-pill">Traefik</span>
+      <span class="tech-pill">GitHub Actions</span>
+    </div>
+  </div>
+</section>
+
+<!-- DATA SOURCES -->
+<section class="section" style="background:#f8fafc; padding-top:3rem; padding-bottom:3.5rem;">
+  <div class="container">
+    <h2 class="section-title">Data Sources</h2>
+    <p class="section-sub">Trusted organizations that provided data for PICO SulTeng</p>
+    <div class="sources-grid">
+      <img class="source-logo" src="/sulteng-lawan-covid.webp" alt="Sulteng Lawan COVID" />
+      <img class="source-logo" src="/dinkes-sulteng.webp" alt="Dinas Kesehatan Sulteng" />
+      <img class="source-logo" src="/inacovid.webp" alt="InaCOVID" />
+      <img class="source-logo" src="/detexi.webp" alt="Detexi" />
+      <img class="source-logo" src="/banua-coder.webp" alt="Banua Coder" />
+      <img class="source-logo" src="/ethical-hacker-indonesia.webp" alt="Ethical Hacker Indonesia" />
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2020–2026 <a href="https://github.com/ryanaidilp" target="_blank" rel="noopener">Fajrian Aidil Pratama</a> · <a href="https://github.com/banua-coder" target="_blank" rel="noopener">Banua Coder</a> · Open Source &amp; Free</p>
+</footer>
+
+</body>
+</html>
