@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: banua-coder/pico-hub
+  IMAGE_NAME: aidil-coder-bot/pico-hub
 
 jobs:
   build-and-push:
